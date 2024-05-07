@@ -11,8 +11,7 @@ public class Conneccion {
 	    System.out.println("Connection avec sucsses!");
 		}
 		catch(Exception e){
-			System.out.println("non connecter");
-			
+		    System.out.println("Connection failed: " + e.getMessage());
 		}
 		
 	}
@@ -20,3 +19,4 @@ public class Conneccion {
     	return cn;
     }
 }
+
