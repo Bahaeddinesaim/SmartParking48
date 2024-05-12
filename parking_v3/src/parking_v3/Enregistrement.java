@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -32,7 +33,7 @@ public class Enregistrement extends JFrame {
 	ResultSet rst;
 	JTable table,table2;
 	JScrollPane scroll,scroll2;
-	JLabel lbtitre1,lbtitre2,lbnum_place,lbtype_place,lb_idproprio,lb_nomproprio,lb_mtype,lb_place,lb_matricule,lbplaces_voiture_occup,lbplaces_velo_occup,lbplaces_moto_occup;
+	JLabel lbtitre1,lbtitre2,lbnum_place,lbvelo,lbmoto,lbvoi,lbtype_place,lb_idproprio,lb_nomproprio,lb_mtype,lb_place,lb_matricule,lbplaces_voiture_occup,lbplaces_velo_occup,lbplaces_moto_occup;
 	JTextField tfnum_place,tf_idproprio,tf_nomproprio,tf_place,tf_matricule;
 	JComboBox combo_typlace,combo_typlace2;
 	JButton btenrg,btsupp,btplace_dispo,btactu,btenrg_occup,btrech,btliberer_place;
@@ -41,7 +42,7 @@ public class Enregistrement extends JFrame {
 	
 	public Enregistrement(){
     	this.setTitle("Parking");
-		this.setSize(900,700);
+		this.setSize(950,800);
 		this.setLocationRelativeTo(null);
 		this.setResizable(false);//this.setLocation(230, 80);
 		final JPanel pn=new JPanel();
@@ -74,9 +75,9 @@ public class Enregistrement extends JFrame {
 		combo_typlace.setBounds(193,80,130,25);
 		pn.add(combo_typlace);
 		
-		
-		btenrg=new JButton("ENREGISTRER");
-		btenrg.setBounds(55,140,120,25);
+		ImageIcon save = new ImageIcon(getClass().getResource("save.png"));
+		btenrg=new JButton("ENREGISTRER",save);
+		btenrg.setBounds(15,140,160,25);
 		btenrg.addActionListener(new ActionListener(){
 		    public void actionPerformed(ActionEvent ev){
 		        String numero,type;
@@ -109,9 +110,9 @@ public class Enregistrement extends JFrame {
 		});
 		pn.add(btenrg);
 
-		
-		btsupp=new JButton("SUPPRIMER");
-		btsupp.setBounds(200,140,120,25);
+		ImageIcon supp = new ImageIcon(getClass().getResource("supp.png"));
+		btsupp=new JButton("SUPPRIMER",supp);
+		btsupp.setBounds(200,140,160,25);
 		btsupp.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent ev){
 				String numero=tfnum_place.getText();
@@ -138,9 +139,9 @@ public class Enregistrement extends JFrame {
 		lbtitre2.setFont(new Font("Arial",Font.BOLD,22));
 		pn.add(lbtitre2);
 		
-		
-		btplace_dispo=new JButton("VERIFIER");
-		btplace_dispo.setBounds(116,256,120,25);
+		ImageIcon ver = new ImageIcon(getClass().getResource("ver.png"));
+		btplace_dispo=new JButton("VERIFIER",ver);
+		btplace_dispo.setBounds(116,256,138,25);
 		btplace_dispo.addActionListener(new ActionListener(){
 			public void actionPerformed (ActionEvent ev){
 				String type=combo_typlace.getSelectedItem().toString();
@@ -190,35 +191,35 @@ rst.getString("num_place"),rst.getString("type_place")
 		 catch(SQLException ex){
 		    	JOptionPane.showMessageDialog(null,"Erreur !",null,JOptionPane.ERROR_MESSAGE);	
 		    }
-		 btactu=new JButton("ACTUALISER");
-			btactu.setBounds(600,5,120,25);
-			btactu.addActionListener(new ActionListener(){
-				public void actionPerformed(ActionEvent ev){
-					dispose();
-					Enregistrement eg=new Enregistrement();
-					eg.setVisible(true);
-					
-				}
-			});
+		 ImageIcon icon = new ImageIcon(getClass().getResource("ref.png"));
+		 btactu = new JButton("ACTUALISER", icon);
+		 btactu.setBounds(516,5,164,25);
+		 btactu.addActionListener(new ActionListener(){
+		     public void actionPerformed(ActionEvent ev){
+		         dispose();
+		         Enregistrement eg=new Enregistrement();
+		         eg.setVisible(true);
+		     }
+		 });
 			pn.add(btactu);
 			
 			lb_idproprio=new JLabel("Numero du proprietaire (TEL ou CIN) ");
-			lb_idproprio.setBounds(15,360,300,25);
+			lb_idproprio.setBounds(15,323,300,25);
 			pn.add(lb_idproprio);
 			tf_idproprio=new JTextField();
-			tf_idproprio.setBounds(290,360,80,25);
+			tf_idproprio.setBounds(289,323,80,25);
 			pn.add(tf_idproprio);
 			
 			lb_nomproprio=new JLabel("Nom du proprietaire");
-			lb_nomproprio.setBounds(15,390,250,25);
+			lb_nomproprio.setBounds(15,355,250,25);
 			pn.add(lb_nomproprio);
 			
 			tf_nomproprio=new JTextField();
-			tf_nomproprio.setBounds(240,390,130,25);
+			tf_nomproprio.setBounds(240,358,130,25);
 			pn.add(tf_nomproprio);
 			
 			lb_mtype=new JLabel("Type de moyen de transport");
-			lb_mtype.setBounds(15,420,250,25);
+			lb_mtype.setBounds(15,390,250,25);
 			pn.add(lb_mtype);
 			
 			combo_typlace2=new JComboBox();
@@ -226,27 +227,28 @@ rst.getString("num_place"),rst.getString("type_place")
 			combo_typlace2.addItem("VOITURE");
 			combo_typlace2.addItem("MOTO");
 			combo_typlace2.addItem("VELO");
-			combo_typlace2.setBounds(240,420,130,25);
+			combo_typlace2.setBounds(240,390,130,25);
 			pn.add(combo_typlace2);
 			//Numero de place
 			lb_place=new JLabel("Numero de place");
-			lb_place.setBounds(15,450,250,25);
+			lb_place.setBounds(15,420,250,25);
 			pn.add(lb_place);
 			
 			tf_place=new JTextField();
-			tf_place.setBounds(240,450,130,25);
+			tf_place.setBounds(240,420,130,25);
 			pn.add(tf_place);
 			//Numero d'immatriculation
 			lb_matricule=new JLabel("Numero d'immatriculation");
-			lb_matricule.setBounds(15,480,250,25);
+			lb_matricule.setBounds(15,455,250,25);
 			pn.add(lb_matricule);
 			
 			tf_matricule=new JTextField();
-			tf_matricule.setBounds(240,480,130,25);
+			tf_matricule.setBounds(240,455,130,25);
 			pn.add(tf_matricule);
 			
-			btenrg_occup=new JButton("ENREGISTRER UNE OCCUPATION");
-			btenrg_occup.setBounds(100,530,220,25);
+			
+			btenrg_occup=new JButton("ENREGISTRER UN CLIENT",save);
+			btenrg_occup.setBounds(80,496,240,25);
 			btenrg_occup.addActionListener(new ActionListener(){
 				public void actionPerformed(ActionEvent ev){
 					String   idproprio,nomproprio,typemt,num_place,matricule;
@@ -282,8 +284,9 @@ rst.getString("num_place"),rst.getString("type_place")
 			});
 			pn.add(btenrg_occup);
 			
-			btrech=new JButton("CHERCHER UNE OCCUPATION");
-			btrech.setBounds(100,570,220,25);
+			ImageIcon cher = new ImageIcon(getClass().getResource("cher.png"));
+			btrech=new JButton("CHERCHER UN CLIENT",cher);
+			btrech.setBounds(80,531,240,25);
 			btrech.addActionListener(new ActionListener(){
 				public void actionPerformed(ActionEvent ev){
 					String num_place=tf_place.getText();
@@ -312,8 +315,8 @@ rst.getString("num_place"),rst.getString("type_place")
 			});
 			pn.add(btrech);
 
-			btliberer_place=new JButton("LIBERER UNE PLACE");
-			btliberer_place.setBounds(100,610,220,25);
+			btliberer_place=new JButton("LIBERER UN CLIENT",supp);
+			btliberer_place.setBounds(83,566,240,25);
 			btliberer_place.addActionListener(new ActionListener(){
 				public void actionPerformed(ActionEvent ev){
 					String num_place=tf_place.getText();
@@ -366,8 +369,13 @@ rst.getString("num_place"),rst.getString("type_place")
 			    }
 			 
 			 
+			 ImageIcon voi = new ImageIcon(getClass().getResource("voi.png"));
+			 	lbvoi=new JLabel(voi);
+				lbvoi.setBounds(80,601,153,78);
+				pn.add(lbvoi);
+				
 			 lbplaces_voiture_occup=new JLabel("");
-				lbplaces_voiture_occup.setBounds(400,590,500,30);
+				lbplaces_voiture_occup.setBounds(30,657,500,43);
 				pn.add(lbplaces_voiture_occup);
 				
 			 String req1="select count(*) as nbvoitures from tb_occupation where mt_type='VOITURE'";
@@ -384,9 +392,13 @@ rst.getString("num_place"),rst.getString("type_place")
 			    	JOptionPane.showMessageDialog(null,"Erreur !",null,JOptionPane.ERROR_MESSAGE);	
 			    }
 			 
-			 
-			 lbplaces_velo_occup=new JLabel("");
-				lbplaces_velo_occup.setBounds(400,610,500,30);
+			 ImageIcon velo = new ImageIcon(getClass().getResource("velo.png"));
+			 	lbvelo=new JLabel(velo);
+				lbvelo.setBounds(386,600,153,79);
+				pn.add(lbvelo);
+				
+			 	lbplaces_velo_occup=new JLabel("");
+				lbplaces_velo_occup.setBounds(335,657,500,43);
 				pn.add(lbplaces_velo_occup);
 				
 				 String req2="select count(*) as nbvelos from tb_occupation where mt_type='VELO'";
@@ -403,9 +415,26 @@ rst.getString("num_place"),rst.getString("type_place")
 				    	JOptionPane.showMessageDialog(null,"Erreur !",null,JOptionPane.ERROR_MESSAGE);	
 				    }
 				 
+				 
+				 ImageIcon moto = new ImageIcon(getClass().getResource("moto.png"));
+				  lbmoto=new JLabel(moto);
+					lbmoto.setBounds(678,600,153,78);
+					pn.add(lbmoto);
+					
 				  lbplaces_moto_occup=new JLabel("");
-					lbplaces_moto_occup.setBounds(400,630,500,30);
+					lbplaces_moto_occup.setBounds(631,657,500,43);
 					pn.add(lbplaces_moto_occup);
+					
+					ImageIcon deco = new ImageIcon(getClass().getResource("deco.png"));
+					JButton dex = new JButton("Deconexion ",deco);
+					dex.setBounds(690, 5, 170, 26);
+					 dex.addActionListener(new ActionListener(){
+					     public void actionPerformed(ActionEvent ev){
+					         dispose();
+					        
+					     }
+					 });
+					pn.add(dex);
 					
 						 String req3="select count(*) as nbmotos from tb_occupation where mt_type='MOTO'";
 					 try{
@@ -443,5 +472,4 @@ rst.getString("num_place"),rst.getString("type_place")
 			scroll2.setViewportView(table2);
 			
 		}
-
 }
