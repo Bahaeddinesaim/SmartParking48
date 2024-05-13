@@ -1,7 +1,6 @@
 package parking_v3;
 
 import java.awt.Color;
-import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,7 +19,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import parking_v3.Conneccion;
 
@@ -41,10 +39,16 @@ public class Enregistrement extends JFrame {
 	
 	
 	public Enregistrement(){
-    	this.setTitle("Parking");
-		this.setSize(950,800);
-		this.setLocationRelativeTo(null);
-		this.setResizable(false);//this.setLocation(230, 80);
+		 if (!AuthenticationPage.isConnected) {
+	            dispose(); // Fermer la fenêtre actuelle
+	            AuthenticationPage login = new AuthenticationPage();
+	            login.setVisible(true);
+	        } else {
+	            // Initialiser la fenêtre d'enregistrement normalement
+	            setTitle("Parking");
+	            setSize(950, 800);
+	            setLocationRelativeTo(null);
+	            setResizable(false);
 		final JPanel pn=new JPanel();
 		pn.setLayout(null);
 		getContentPane().add(pn);
@@ -314,6 +318,8 @@ rst.getString("num_place"),rst.getString("type_place")
 				}
 			});
 			pn.add(btrech);
+			
+			
 
 			btliberer_place=new JButton("LIBERER UN CLIENT",supp);
 			btliberer_place.setBounds(83,566,240,25);
@@ -452,7 +458,7 @@ rst.getString("num_place"),rst.getString("type_place")
 			
 			 
 			 
-    }
+    }}
 	public static void main(String[] args) throws IOException {
 		Enregistrement enrg=new Enregistrement();
 		enrg.setVisible(true);

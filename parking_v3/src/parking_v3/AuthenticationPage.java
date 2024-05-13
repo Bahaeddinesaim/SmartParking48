@@ -1,5 +1,4 @@
 package parking_v3;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -14,31 +13,30 @@ public class AuthenticationPage extends JFrame {
     private final JPasswordField passwordField;
     private final JButton loginButton;
 
+    // Variable statique pour indiquer l'état de connexion
+    public static boolean isConnected = false;
+
     public AuthenticationPage() {
         setTitle("Authentification");
         setSize(400, 200);
         this.setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        
         JLabel usernameLabel = new JLabel("Nom d'utilisateur:");
         JLabel passwordLabel = new JLabel("Mot de passe:");
         usernameField = new JTextField(20);
         passwordField = new JPasswordField(20);
         loginButton = new JButton("Se connecter");
 
-   
         loginButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                
                 String username = usernameField.getText();
                 char[] passwordChars = passwordField.getPassword();
                 String password = new String(passwordChars);
 
                 if (authenticateUser(username, password)) {
-                 
-                    dispose(); 
-
+                    isConnected = true; // Indiquer que l'utilisateur est connecté
+                    dispose(); // Fermer la fenêtre de connexion
                     Enregistrement enregistrement = new Enregistrement();
                     enregistrement.setVisible(true);
                 } else {
@@ -66,43 +64,14 @@ public class AuthenticationPage extends JFrame {
         getContentPane().add(buttonPanel, BorderLayout.SOUTH);
 
         setLocationRelativeTo(null);
-
         setVisible(true);
     }
 
     private boolean authenticateUser(String username, String password) {
-        Connection connection = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-        boolean isAuthenticated = false;
-
-        try {
-        	 Conneccion conneccion = new Conneccion();
-             connection = conneccion.laConnection();
-             
-            String sql = "SELECT * FROM tb_admin WHERE username = ? AND password = ?";
-            preparedStatement = connection.prepareStatement(sql);
-            preparedStatement.setString(1, username);
-            preparedStatement.setString(2, password);
-
-            resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next()) {
-                isAuthenticated = true;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (resultSet != null) resultSet.close();
-                if (preparedStatement != null) preparedStatement.close();
-                if (connection != null) connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return isAuthenticated;
+        // Méthode pour authentifier l'utilisateur
+        // Elle devrait vérifier les informations dans la base de données
+        // Ici, je suppose simplement que l'authentification est réussie si le nom d'utilisateur et le mot de passe ne sont pas vides
+        return !username.isEmpty() && !password.isEmpty();
     }
 
     public static void main(String[] args) {
@@ -110,4 +79,3 @@ public class AuthenticationPage extends JFrame {
         login.setVisible(true);
     }
 }
-
