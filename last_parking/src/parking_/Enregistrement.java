@@ -1,7 +1,11 @@
 package parking_;
 
-import java.awt.Color;
-import java.awt.Font;
+import javax.mail.*;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -10,25 +14,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 import java.util.Random;
-
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.table.DefaultTableModel;
 
 public class Enregistrement extends JFrame {
 
@@ -306,53 +291,32 @@ public class Enregistrement extends JFrame {
                 }
 
                 public void sendEmail(String to, String password) {
-                    // Informations SMTP
                     final String username = "haythamhammouda123@gmail.com";
                     final String userpassword = "wazycepfsfiqfzya";
-
-                    // Configuration des propriétés SMTP
                     Properties props = new Properties();
                     props.put("mail.smtp.auth", "true");
                     props.put("mail.smtp.starttls.enable", "true");
                     props.put("mail.smtp.host", "smtp.gmail.com");
                     props.put("mail.smtp.port", "587");
+                    props.put("mail.smtp.ssl.protocols", "TLSv1.2 TLSv1.3");
                     props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
-                    //  System.out.println("props yes!");
 
-                    // Création de la session avec authentification
+
                     Session session = Session.getInstance(props, new javax.mail.Authenticator() {
                         protected PasswordAuthentication getPasswordAuthentication() {
-                            //    System.out.println("session yes!");
-
                             return new PasswordAuthentication(username, userpassword);
                         }
                     });
-
                     try {
-                        // Création du message email
-                        //System.out.println("1!");
-
                         MimeMessage message = new MimeMessage(session);
-                        //System.out.println("2!");
-
                         message.setFrom(new InternetAddress(username));
-                        //System.out.println("3!");
-
                         message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
-                        //System.out.println("!4");
-
                         message.setSubject("Votre mot de passe");
-                        //  System.out.println("5!");
-
                         message.setText("Voici votre mot de passe  : " + password);
-                        // System.out.println("6!"+message);
 
-
-                        // Envoi du message
                         Transport.send(message);
 
                         JOptionPane.showMessageDialog(null, "Email sent successfully!", null, JOptionPane.INFORMATION_MESSAGE);
-
                     } catch (MessagingException e) {
                         e.printStackTrace();
                         String errorMessage = "Failed to send email: " + e.getMessage();
@@ -585,6 +549,7 @@ public class Enregistrement extends JFrame {
 
         }}
     public static void main(String[] args) throws IOException {
+        System.setProperty("https.protocols", "TLSv1.2,TLSv1.3");
         AuthenticationPage login = new AuthenticationPage();
         login.setVisible(true);
 
