@@ -1,5 +1,7 @@
 package parking_;
 
+import lombok.NonNull;
+
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
@@ -12,6 +14,7 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.Properties;
 import java.util.Random;
 
@@ -76,7 +79,7 @@ public class Enregistrement extends JFrame {
             btenrg=new JButton("ENREGISTRER",save);
             btenrg.setBounds(15,140,160,25);
             btenrg.addActionListener(new ActionListener(){
-                public void actionPerformed(ActionEvent ev){
+                public void actionPerformed(@NonNull ActionEvent ev){
                     String numero,type;
                     numero=tfnum_place.getText();
                     type=combo_typlace.getSelectedItem().toString();
@@ -104,7 +107,8 @@ public class Enregistrement extends JFrame {
                     Enregistrement eg=new Enregistrement();
                     eg.setVisible(true);
                 }
-            });
+            }
+            );
             pn.add(btenrg);
 
             ImageIcon supp = new ImageIcon(getClass().getResource("supp.png"));
@@ -153,10 +157,7 @@ public class Enregistrement extends JFrame {
                             df.addRow(new Object[]{
                                     rst.getString("num_place"),rst.getString("type_place")
                             });
-
                         }
-
-
                     }
                     catch(SQLException ex){
                         JOptionPane.showMessageDialog(null,"Erreur !",null,JOptionPane.ERROR_MESSAGE);
@@ -255,8 +256,8 @@ public class Enregistrement extends JFrame {
             btenrg_occup=new JButton("AJOUTER",save);
             btenrg_occup.setBounds(20,526,158,25);
             btenrg_occup.addActionListener(new ActionListener(){
-                public void actionPerformed(ActionEvent ev){
-                    String   idproprio,nomproprio,typemt,num_place,matricule;
+                public void actionPerformed(@NonNull ActionEvent ev){
+                    String idproprio,nomproprio,typemt,num_place,matricule;
                     idproprio=tf_idproprio.getText();
                     nomproprio=tf_nomproprio.getText();
                     typemt=combo_typlace2.getSelectedItem().toString();
@@ -264,17 +265,24 @@ public class Enregistrement extends JFrame {
                     num_place=tf_place.getText();
                     String email = tfemail.getText();
                     String randomPassword = generateRandomPassword();
-                    sendEmail(email,randomPassword);
                     String rq="insert into tb_occupation(proprio_id,proprio_nom,mt_type,mt_matricule,id_place,email,randomPassword)"
                             + "values('"+idproprio+"','"+nomproprio+"','"+typemt+"','"+matricule+"','"+num_place+"','"+email+"','"+randomPassword+"')";
                     String rq2="update tb_place set disponible='non' where num_place='"+num_place+"'";
+
+                    LocalDate today = LocalDate.now();
+                    LocalDate nextYear = today.plusYears(1);
+                    String rq3 = "insert into tb_reservation(date_debut, date_expiration, id_place, idproprio)" +
+                            " values('" + today.toString() + "','" + nextYear.toString() + "','" + num_place + "','" + idproprio + "')";
 
                     try{
                         st=con.laConnection().createStatement();
                         if(!idproprio.equals("")&&!nomproprio.equals("")&&!typemt.equals("")&&!num_place.equals("")&&!email.equals("")&&!randomPassword.equals("")){
                             st.executeUpdate(rq);
                             st.executeUpdate(rq2);
+                            st.executeUpdate(rq3);
+
                             JOptionPane.showMessageDialog(null,"Occupation enregistree avec succes !",null,JOptionPane.INFORMATION_MESSAGE);
+                            sendEmail(email, randomPassword ,nomproprio ,1);
                         }
                         else{
                             JOptionPane.showMessageDialog(null,"Completez le formulaire!",null,JOptionPane.ERROR_MESSAGE);
@@ -287,63 +295,19 @@ public class Enregistrement extends JFrame {
                     dispose();
                     Enregistrement eg=new Enregistrement();
                     eg.setVisible(true);
-
                 }
 
-                public void sendEmail(String to, String password) {
-                    final String username = "haythamhammouda123@gmail.com";
-                    final String userpassword = "wazycepfsfiqfzya";
-                    Properties props = new Properties();
-                    props.put("mail.smtp.auth", "true");
-                    props.put("mail.smtp.starttls.enable", "true");
-                    props.put("mail.smtp.host", "smtp.gmail.com");
-                    props.put("mail.smtp.port", "587");
-                    props.put("mail.smtp.ssl.protocols", "TLSv1.2 TLSv1.3");
-                    props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
-
-
-                    Session session = Session.getInstance(props, new javax.mail.Authenticator() {
-                        protected PasswordAuthentication getPasswordAuthentication() {
-                            return new PasswordAuthentication(username, userpassword);
-                        }
-                    });
-                    try {
-                        MimeMessage message = new MimeMessage(session);
-                        message.setFrom(new InternetAddress(username));
-                        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
-                        message.setSubject("Votre mot de passe");
-                        message.setText("Voici votre mot de passe  : " + password);
-
-                        Transport.send(message);
-
-                        JOptionPane.showMessageDialog(null, "Email sent successfully!", null, JOptionPane.INFORMATION_MESSAGE);
-                    } catch (MessagingException e) {
-                        e.printStackTrace();
-                        String errorMessage = "Failed to send email: " + e.getMessage();
-                        if (e.getNextException() != null) {
-                            errorMessage += "\nNext Exception: " + e.getNextException().getMessage();
-                        }
-                        JOptionPane.showMessageDialog(null, "Failed to send email:!", null, JOptionPane.ERROR_MESSAGE);
-
-
-                    }
-                }
                 private String generateRandomPassword() {
-                    // Définition des caractères pouvant être utilisés dans le mot de passe
                     String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+";
-
-                    // Longueur du mot de passe désirée
-                    int length = 10;
-
-                    // Génération du mot de passe aléatoire
+                    int length = 6;
                     Random random = new Random();
                     StringBuilder password = new StringBuilder();
                     for (int i = 0; i < length; i++) {
                         password.append(chars.charAt(random.nextInt(chars.length())));
                     }
-
                     return password.toString();
                 }
+
             });
             pn.add(btenrg_occup);
 
@@ -355,7 +319,7 @@ public class Enregistrement extends JFrame {
                     String num_place=tf_place.getText();
                     String rq="select * from tb_occupation where id_place='"+num_place+"'";
                     try{
-                        st=con.laConnection().createStatement();
+                      //  st=con.laConnection().createStatement();
                         rst=st.executeQuery(rq);
                         if(rst.next()){
                             tf_idproprio.setText(rst.getString("proprio_id"));
@@ -363,6 +327,7 @@ public class Enregistrement extends JFrame {
                             combo_typlace2.setSelectedItem(rst.getString("mt_type"));
                             tf_place.setText(rst.getString("id_place"));
                             tf_matricule.setText(rst.getString("mt_matricule"));
+                            tfemail.setText(rst.getString("email"));
                         }
                         else{
                             JOptionPane.showMessageDialog(null,"Enregistrement inexistant!",null,JOptionPane.ERROR_MESSAGE);
@@ -380,28 +345,46 @@ public class Enregistrement extends JFrame {
 
 
 
-            btliberer_place=new JButton("LIBERER",supp);
+            btliberer_place=new JButton("LIBERER", supp);
             btliberer_place.setBounds(20,566,158,25);
             btliberer_place.addActionListener(new ActionListener(){
                 public void actionPerformed(ActionEvent ev){
-                    String num_place=tf_place.getText();
-                    String rq1="update tb_place set disponible='oui' where num_place='"+num_place+"'",
-                            rq2="delete from tb_occupation where id_place='"+num_place+"'";
+                    String num_place = tf_place.getText();
+                    String getEmailQuery = "SELECT email, proprio_nom FROM tb_occupation WHERE id_place='" + num_place + "'"; // Query to retrieve email and nom
+
+                    String updateQuery = "UPDATE tb_place SET disponible='oui' WHERE num_place='" + num_place + "'",
+                            deleteQuery = "DELETE FROM tb_occupation WHERE id_place='" + num_place + "'";
+
                     try{
-                        st=con.laConnection().createStatement();
-                        if(JOptionPane.showConfirmDialog(null,"voulez-vous liberer cette place? ",null,JOptionPane.OK_CANCEL_OPTION)==JOptionPane.OK_OPTION){
-                            st.executeUpdate(rq1);
-                            st.executeUpdate(rq2);
-                            JOptionPane.showMessageDialog(null,"Liberation de place confirmee !",null,JOptionPane.INFORMATION_MESSAGE);
+                      //  st = con.laConnection().createStatement();
+                        ResultSet rs = st.executeQuery(getEmailQuery); // Execute query to get email and nom
+
+                        if(rs.next()) {
+                            String email = rs.getString("email"); // Retrieve the email from the query result
+                            String nomproprio = rs.getString("proprio_nom"); // Retrieve the nom from the query result
+
+                            if(JOptionPane.showConfirmDialog(null, "voulez-vous liberer cette place? ", null, JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION){
+                                st.executeUpdate(updateQuery); // Update the place as available
+                                st.executeUpdate(deleteQuery); // Remove the entry from the occupation table
+                                JOptionPane.showMessageDialog(null, "Liberation de place confirmee !", null, JOptionPane.INFORMATION_MESSAGE);
+
+                               // sendEmail2(email, nomproprio);
+                                sendEmail(email, null, nomproprio, 2);
+                                }
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Aucun email trouvé pour la place spécifiée.", null, JOptionPane.WARNING_MESSAGE);
                         }
                     }
                     catch(SQLException ex){
-                        JOptionPane.showMessageDialog(null,"Erreur!",null,JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "Erreur lors de la tentative de libération de la place.", null, JOptionPane.ERROR_MESSAGE);
                     }
                     dispose();
-                    Enregistrement eg=new Enregistrement();
+                    Enregistrement eg = new Enregistrement();
                     eg.setVisible(true);
                 }
+
+
+
             });
             pn.add(btliberer_place);
 
@@ -433,37 +416,6 @@ public class Enregistrement extends JFrame {
             catch(SQLException ex){
                 JOptionPane.showMessageDialog(null,"Erreur !",null,JOptionPane.ERROR_MESSAGE);
             }
-
-            // btmotdepasseAleatoire = new JButton("GÉNÉRER MDP");
-            //  btmotdepasseAleatoire.setBounds(210, 566, 158, 25);
-            // btmotdepasseAleatoire.addActionListener(new ActionListener() {
-            //   public void actionPerformed(ActionEvent ev) {
-            //     String email = tfemail.getText();
-            //   String randomPassword = generateRandomPassword();
-
-            //}
-
-
-
-            //	 private String generateRandomPassword() {
-            // Définition des caractères pouvant être utilisés dans le mot de passe
-            //        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+";
-
-            // Longueur du mot de passe désirée
-            //      int length = 10;
-
-            // Génération du mot de passe aléatoire
-            //    Random random = new Random();
-            //  StringBuilder password = new StringBuilder();
-            // for (int i = 0; i < length; i++) {
-            //   password.append(chars.charAt(random.nextInt(chars.length())));
-            //}
-
-            //return password.toString();
-            //}
-            //});
-            //pn.add(btmotdepasseAleatoire);
-
             ImageIcon voi = new ImageIcon(getClass().getResource("voi.png"));
             lbvoi=new JLabel(voi);
             lbvoi.setBounds(80,601,153,78);
@@ -547,7 +499,8 @@ public class Enregistrement extends JFrame {
 
 
 
-        }}
+        }
+    }
     public static void main(String[] args) throws IOException {
         System.setProperty("https.protocols", "TLSv1.2,TLSv1.3");
         AuthenticationPage login = new AuthenticationPage();
@@ -561,6 +514,47 @@ public class Enregistrement extends JFrame {
         scroll.setViewportView(table);
     }
 
+    public void sendEmail(String to, String password, String nom, int ty) {
+        final String username = "haythamhammouda123@gmail.com";
+        final String userpassword = "wazycepfsfiqfzya";
+        Properties props = new Properties();
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.host", "smtp.gmail.com");
+        props.put("mail.smtp.port", "587");
+        props.put("mail.smtp.ssl.protocols", "TLSv1.2 TLSv1.3");
+        props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
+
+        Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(username, userpassword);
+            }
+        });
+        int type = ty;
+        try {
+            MimeMessage message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(username));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
+
+            if (type==2) {
+                message.setSubject("Reservation annulée");
+                message.setText("Bonjour " + nom + ",\n\nVotre reservation est annulée, merci.");
+            } else if (type==1) {
+                message.setSubject("Votre mot de passe");
+                message.setText("Bonjour Mr: " + nom + " bienvenu à notre parking_48,\n\n" +
+                        "Voici votre mot de passe : " + password + "\n" +
+                        "Cordialement,\n\n" +
+                        "admin.");
+            }
+
+            Transport.send(message);
+            JOptionPane.showMessageDialog(null, "Email sent successfully!", null, JOptionPane.INFORMATION_MESSAGE);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            String errorMessage = "Failed to send email: " + e.getMessage();
+        }}
+
+
     private void init2(){
         table2=new JTable();
         scroll2=new JScrollPane();
@@ -568,4 +562,5 @@ public class Enregistrement extends JFrame {
         scroll2.setViewportView(table2);
 
     }
+
 }
