@@ -1,0 +1,59 @@
+﻿@{
+    ViewData["Title"] = "ReservationDetails";
+}
+
+@model parking.Models.Reservation
+ <head>
+    <link rel="stylesheet" href="~/assets/css/reservation.css">
+    <style>
+        
+       
+    </style>
+</head>
+<body>
+<h1>Détails de la réservation</h1>
+
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Détail</th>
+                <th>Valeur</th>
+            </tr>
+        </thead>
+        
+        <tbody>
+            <tr>
+                <td>Date Début</td>
+                <td>@Html.DisplayFor(model => model.date_debut)</td>
+            </tr>
+            <tr>
+                <td>Date D'expiration'</td>
+                <td>@Html.DisplayFor(model => model.date_expiration)</td>
+            </tr>
+            <tr>
+                <td>Numéro de Place</td>
+                <td>@Html.DisplayFor(model => model.Place.num_place)</td>
+            </tr>
+           
+            <tr>
+                <td>Nom</td>
+                <td>@Html.DisplayFor(model => model.Occupation.proprio_nom)</td>
+            </tr>
+            <tr>
+                <td>Type de Place</td>
+                <td>@Html.DisplayFor(model => model.Occupation.mt_type)</td>
+            </tr>
+            <tr>
+                <td>Matricule</td>
+                <td>@Html.DisplayFor(model => model.Occupation.mt_matricule)</td>
+            </tr>
+        </tbody>
+
+    </table>
+
+
+<div >
+    <a href="@Url.Action("Logout", "Account")" class="btn btn-danger">Déconnexion</a>
+</div>
+</body>
